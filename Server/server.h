@@ -3,8 +3,8 @@
 
 #include <pthread.h>
 
-#define MSG_LEN 1024
 /* Maxima cantidad de cliente que soportará nuestro servidor */
+#define MSG_LEN 1024
 #define MAX_CLIENTS 15
 #define MAX_NICKNAME 150
 #define MAX_LEN 1200

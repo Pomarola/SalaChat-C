@@ -31,7 +31,7 @@ void error(char *msg){
 }
 
 int main(int argc, char **argv){
-  char buf[MSG_LEN];
+  char buf[MAX_LEN];
 
   /*Chequeamos mínimamente que los argumentos fueron pasados*/
   if(argc != 3){
@@ -89,7 +89,7 @@ void * sendMsg() {
 }
 
 void shut_down (int signal) {
-  char buf[MSG_LEN];
+  char buf[MAX_LEN];
   (void) signal;
 
   send(socketSv, "/exit", sizeof("/exit"), 0);
