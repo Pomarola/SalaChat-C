@@ -1,27 +1,15 @@
 #include "client.h"
 
-/* RemoteClient.c
-   Se introducen las primitivas necesarias para establecer una conexión simple
-   dentro del lenguaje C utilizando sockets.
-*/
-/* Cabeceras de Sockets */
 #include <sys/types.h>
 #include <sys/socket.h>
-/* Cabecera de direcciones por red */
 #include <netdb.h>
-/**********/
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <pthread.h>
 #include <string.h>
 #include <signal.h>
-
-/*
-  El archivo describe un sencillo cliente que se conecta al servidor establecido
-  en el archivo RemoteServer.c. Se utiliza de la siguiente manera:
-  $cliente IP port
- */
 
 int socketSv;
 struct addrinfo *result;

@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -10,6 +11,7 @@
 
 int search_nickname(client* clientArray, char* nickname) {
   int found = 0, i = 0;
+
   for (; i < MAX_CLIENTS && !found; i++) {
     if (!strcmp(clientArray[i].nickname, nickname))
       found = 1;
@@ -20,6 +22,7 @@ int search_nickname(client* clientArray, char* nickname) {
 
 int obtain_socket(client* clientArray, char* nickname) {
   int found = 0, i = 0, socket = -1;
+
   for (; i < MAX_CLIENTS && !found; i++) {
     if (!strcmp(clientArray[i].nickname, nickname))
       found = 1;
@@ -33,6 +36,7 @@ int obtain_socket(client* clientArray, char* nickname) {
 
 void new_client(client* clientArray, char* nickname, int socket) {
   int i = 0;
+
   for (; clientArray[i].socket != -1; i++);
 
   strcpy(clientArray[i].nickname, nickname);
@@ -41,24 +45,24 @@ void new_client(client* clientArray, char* nickname, int socket) {
 
 void change_nickname(client* clientArray, char* newNickname, int socket) {
   int i = 0;
+
   for (; clientArray[i].socket != socket; i++);
 
   strcpy(clientArray[i].nickname, newNickname);
 }
 
-// Devuelve 0 si no lo pudo eliminar
-int delete_client (client* clientArray, int sockClient) {
+void delete_client (client* clientArray, int sockClient) {
   int found = 0, i = 0;
+
   for (; i < MAX_CLIENTS && !found; i++) {
     if (clientArray[i].socket == sockClient)
       found = 1;
   }
+
   if (i != MAX_CLIENTS) {
     clientArray[i-1].socket = -1;
     strcpy(clientArray[i-1].nickname,"");
   }
-
-  return found;
 }
 
 /* Devuelve:
@@ -187,7 +191,7 @@ void * worker(void* argsT){
     int action = take_action(buf);
     
     switch (action) {
-    case 0:
+    case 0:     // msg al canal general
       pthread_mutex_lock(&mutexLock);
 
       for (int i = 0; i < MAX_CLIENTS; i++){
@@ -200,7 +204,7 @@ void * worker(void* argsT){
       pthread_mutex_unlock(&mutexLock);
       break;
 
-    case 1:
+    case 1:   // msg privado
       strcpy(userMsg,"");
       sscanf(buf, "%*s %s %[^\n]", auxNickname, userMsg);
       pthread_mutex_lock(&mutexLock);
@@ -215,7 +219,7 @@ void * worker(void* argsT){
       pthread_mutex_unlock(&mutexLock);
       break;
 
-    case 2:
+    case 2:     // cambio nickname
       sscanf(buf, "%*s %s", auxNickname);
       pthread_mutex_lock(&mutexLock);
 
@@ -229,7 +233,7 @@ void * worker(void* argsT){
       pthread_mutex_unlock(&mutexLock);
       break;
 
-    case 3:
+    case 3:     // exit
       send(soclient, "Hasta luego!", sizeof("Hasta luego!"), 0);
 
       pthread_mutex_lock(&mutexLock);
@@ -238,7 +242,7 @@ void * worker(void* argsT){
       working = 0;
       break;
     
-    default:
+    default:      // comando no reconocido
       send(soclient, "Comando no reconocido", sizeof("Comando no reconocido"), 0);
       break;
     }
